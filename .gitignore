@@ -1,0 +1,6 @@
+**/__pycache__/
+*.npy
+assgin1/assignment1/utils
+assgin1/assignment1/Makefile
+assgin1/assignment1/notes/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
+assgin1/assignment1/notes/1301.3781-Efficient Estimation of Word Representations in Vector Space.pdf
