@@ -170,7 +170,7 @@ class ParserModel(Model):
                 shape=(self.config.hidden_size, self.config.n_classes))
         b2 = tf.Variable(
                 tf.zeros(self.config.n_classes, tf.float32), name="b1")
-        h = tf.add(tf.matmul(x, W), b1)
+        h = tf.nn.relu(tf.add(tf.matmul(x, W), b1))
         h_drop = tf.nn.dropout(h ,1 - self.dropout_placeholder)
         pred = tf.add(tf.matmul(h_drop, U), b2)
         
