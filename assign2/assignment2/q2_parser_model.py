@@ -64,7 +64,7 @@ class ParserModel(Model):
                                                 None, self.config.n_features))
         self.labels_placeholder = tf.placeholder(tf.float32, shape=(
                                                 None, self.config.n_classes))
-        self.dropout_placeholder = tf.placeholder(tf.float32, shape=())                                          
+        self.dropout_placeholder = tf.placeholder(tf.float32)                                          
         
         ### END YOUR CODE
 
@@ -162,12 +162,13 @@ class ParserModel(Model):
         ### YOUR CODE HERE
         
         xavier_initializer = xavier_weight_init()
-        W = xavier_initializer(
-                shape=(self.config.n_features*self.config.embed_size, self.config.hidden_size))
+        # Note: must add tf.Variable after xavier_initializer(), or couldn't optimize the weights!
+        W = tf.Variable(
+                xavier_initializer(shape=(self.config.n_features*self.config.embed_size, self.config.hidden_size)), name="W")
         b1 = tf.Variable(
                 tf.zeros(self.config.hidden_size, tf.float32), name="b1")
-        U = xavier_initializer(
-                shape=(self.config.hidden_size, self.config.n_classes))
+        U = tf.Variable(
+                xavier_initializer(shape=(self.config.hidden_size, self.config.n_classes)), name="U")
         b2 = tf.Variable(
                 tf.zeros(self.config.n_classes, tf.float32), name="b1")
         h = tf.nn.relu(tf.add(tf.matmul(x, W), b1))
