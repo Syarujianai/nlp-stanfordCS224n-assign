@@ -6,6 +6,7 @@ import tensorflow as tf
 import numpy as np
 
 tf.app.flags.DEFINE_boolean('debug', True, 'whether debug or not.')
+tf.app.flags.DEFINE_boolean('extension', False, 'whether use extension or not.')
 FLAGS = tf.app.flags.FLAGS
 
 from model import Model
@@ -29,6 +30,7 @@ class Config(object):
     batch_size = 1024
     n_epochs = 10
     lr = 0.0005
+    extension_on = FLAGS.extension
 
 
 class ParserModel(Model):
@@ -162,7 +164,7 @@ class ParserModel(Model):
         ### YOUR CODE HERE
         
         xavier_initializer = xavier_weight_init()
-        # Note: must add tf.Variable after xavier_initializer(), or couldn't optimize the weights!
+        # Note: only tf.Variable() could be optimized!
         W = tf.Variable(
                 xavier_initializer(shape=(self.config.n_features*self.config.embed_size, self.config.hidden_size)), name="W")
         b1 = tf.Variable(
@@ -193,7 +195,14 @@ class ParserModel(Model):
         """
         ### YOUR CODE HERE
         
-        loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.labels_placeholder, logits=pred)
+        # Manual implementation of L2 regularization.
+        # Refer: https://blog.csdn.net/liangyihuai/article/details/78811664  
+        if self.config.extension_on:
+            loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.labels_placeholder, logits=pred)
+            reg_loss = tf.contrib.layers.apply_regularization(tf.contrib.layers.l2_regularizer(1e-4), tf.trainable_variables())
+            loss += reg_loss
+        else:
+            loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.labels_placeholder, logits=pred)
         
         ### END YOUR CODE
         return loss
